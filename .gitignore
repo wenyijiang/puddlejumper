@@ -1,0 +1,44 @@
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# .gitignore for maven 
+target/
+*.releaseBackup
+ 
+# IDE support files
+/.classpath
+/.launch
+/.project
+/.settings
+/*.launch
+/*.tmproj
+/ivy*
+ 
+#.gitignore for java
+*.class
+ 
+# Package Files #
+*.jar
+*.war
+*.ear
+ 
+## .gitignore for intellij
+ 
+*.iml
+*.ipr
+*.iws
+.idea/
+ 
+## .gitignore for linux
+.*
+!.gitignore
+!.gitattributes
+!.editorconfig
+!.eslintrc
+!.travis.yml
+*~
