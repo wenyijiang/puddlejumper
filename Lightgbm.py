@@ -244,7 +244,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.datasets import  make_classification
 start_time = time.time()
 
-X_train,X_test,y_train,y_test =train_test_split(train, train_labels,test_size=0.1)
+X_train,X_test,y_train,y_test =train_test_split(train, train_labels,test_size=0.2)
 # 加载你的数据
 lgb_train = lgb.Dataset(X_train, y_train)
 lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
@@ -252,7 +252,7 @@ lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
 params = {
     'task': 'train',
     'boosting_type': 'gbdt',  # 设置提升类型
-    'objective': 'regression', # 目标函数
+    'objective': 'binary', # 目标函数
     'metric': {'l2', 'auc'},  # 评估函数
     'num_leaves': 31,   # 叶子节点数
     'learning_rate': 0.05,  # 学习速率
@@ -260,8 +260,8 @@ params = {
     'bagging_fraction': 0.8, # 建树的样本采样比例
     'bagging_freq': 5,  # k 意味着每 k 次迭代执行bagging
     'verbose': 1, # <0 显示致命的, =0 显示错误 (警告), >0 显示信息
-    'max_depth': 8,
-    'is_unbalance':'true'
+    'is_unbalance':'true',
+    'num_tree':200
 
 }
 print('Start training...')
@@ -289,9 +289,6 @@ for i in range(0, len(y_pred)):
     result.write(str(test_id[i]) + "," + str(y_pred[i]))
     result.write("\n")
 result.close()
-
-
-
 
 
 test_id = app_test['SK_ID_CURR']
