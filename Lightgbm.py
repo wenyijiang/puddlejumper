@@ -1,16 +1,6 @@
-#numpy and pandas for data manipulation
-import numpy as np
-import pandas as pd
-
-
-#sklearn preprocessing for dealing with categorical variables
+# sklearn preprocessing for dealing with categorical variables
 from sklearn.preprocessing import LabelEncoder
-
-#File System manangement
-import os
-
-#Suppress warnings
-import warnings
+# Suppress warnings
 # File System manangement
 import os
 # Suppress warnings
@@ -23,35 +13,38 @@ from sklearn.preprocessing import LabelEncoder
 
 warnings.filterwarnings('ignore')
 
-#matplotlib and seaborn for plotting
+# matplotlib and seaborn for plotting
 
-print(os.listdir("/host/home/kagglehomecredit/kaggledata/"))
+print(os.listdir("/host/home/kagglehomecredit/kaggledata"))
 
 app_train = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_train.csv')
 app_test = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_test.csv')
+
+
 # print('Training data shape: ', app_train.shape)
 #
 # print(app_train['TARGET'].value_counts())
 # app_train['TARGET'].astype(int).plot.hist()
-#plt.show()
+# plt.show()
 
 def missing_values_table(df):
-    #Total missing values
+    # Total missing values
     mis_val = df.isnull().sum()
 
-    #Percentage of missing values
+    # Percentage of missing values
     mis_val_percent = 100 * mis_val / len(df)
 
-    #Make a table with the results
-    mis_val_table = pd.concat([mis_val, mis_val_percent], axis = 1)
+    # Make a table with the results
+    mis_val_table = pd.concat([mis_val, mis_val_percent], axis=1)
 
     # Rename the colums
-    mis_val_table_ren_columns = mis_val_table.rename(columns = {0 : 'Missing Values', 1 : '%of Total Values'})
+    mis_val_table_ren_columns = mis_val_table.rename(columns={0: 'Missing Values', 1: '%of Total Values'})
 
-    #Sort the talble bny percentage of missing descending
-    mis_val_table_ren_columns = mis_val_table_ren_columns[mis_val_table_ren_columns.iloc[:,1] != 0].sort_values('%of Total Values', ascending = False).round(1)
+    # Sort the talble bny percentage of missing descending
+    mis_val_table_ren_columns = mis_val_table_ren_columns[mis_val_table_ren_columns.iloc[:, 1] != 0].sort_values(
+        '%of Total Values', ascending=False).round(1)
 
-    #Print some summary information
+    # Print some summary information
     print("Your selected dataframe has " + str(df.shape[1]) + " columns.\n"
                                                               "There are " + str(mis_val_table_ren_columns.shape[0]) +
           " columns that have missing values.")
@@ -70,7 +63,7 @@ def missing_values_table(df):
 le = LabelEncoder()
 le_count = 0
 
-#Iterate through the columns
+# Iterate through the columns
 for col in app_train:
     if app_train[col].dtype == 'object':
         # If 2 or fewer unique categories
@@ -96,7 +89,7 @@ print('Testing Features shape: ', app_test.shape)
 train_labels = app_train['TARGET']
 
 # Align the training and testing data, keep only columns present in both dataframes
-app_train, app_test = app_train.align(app_test, join = 'inner', axis = 1)
+app_train, app_test = app_train.align(app_test, join='inner', axis=1)
 
 # Add the target back in
 app_train['TARGET'] = train_labels
@@ -132,16 +125,17 @@ print('Testing Features shape: ', app_test.shape)
 app_train['DAYS_EMPLOYED_ANOM'] = app_train["DAYS_EMPLOYED"] == 365243
 
 # Replace the anomalous values with nan
-app_train['DAYS_EMPLOYED'].replace({365243: np.nan}, inplace = True)
+app_train['DAYS_EMPLOYED'].replace({365243: np.nan}, inplace=True)
 
 # app_train['DAYS_EMPLOYED'].plot.hist(title = 'Days Employment Histogram');
 # plt.xlabel('Days Employment');
-#plt.show()
+# plt.show()
 
 app_test['DAYS_EMPLOYED_ANOM'] = app_test["DAYS_EMPLOYED"] == 365243
-app_test["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace = True)
+app_test["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace=True)
 
-print('There are %d anomalies in the test data out of %d entries' % (app_test["DAYS_EMPLOYED_ANOM"].sum(), len(app_test)))
+print(
+    'There are %d anomalies in the test data out of %d entries' % (app_test["DAYS_EMPLOYED_ANOM"].sum(), len(app_test)))
 
 # Find correlations with the target and sort
 # correlations = app_train.corr()['TARGET'].sort_values()
@@ -152,7 +146,7 @@ print('There are %d anomalies in the test data out of %d entries' % (app_test["D
 
 # Find the correlation of the positive days since birth and target
 app_train['DAYS_BIRTH'] = abs(app_train['DAYS_BIRTH'])
-#print(app_train['DAYS_BIRTH'].corr(app_train['TARGET']))
+# print(app_train['DAYS_BIRTH'].corr(app_train['TARGET']))
 
 # Set the style of plots
 # plt.style.use('fivethirtyeight')
@@ -179,7 +173,7 @@ age_data = app_train[['TARGET', 'DAYS_BIRTH']]
 age_data['YEARS_BIRTH'] = age_data['DAYS_BIRTH'] / 365
 
 # Bin the age data
-age_data['YEARS_BINNED'] = pd.cut(age_data['YEARS_BIRTH'], bins = np.linspace(20, 70, num = 11))
+age_data['YEARS_BINNED'] = pd.cut(age_data['YEARS_BIRTH'], bins=np.linspace(20, 70, num=11))
 age_data.head(10)
 
 app_train_domain = app_train.copy()
@@ -231,80 +225,72 @@ print('Training data shape: ', train.shape)
 print('Testing data shape: ', test.shape)
 
 
-def mkString(array):
-    s = str(array[0])
-    for i in range(1, len(array)):
-        s = s + "," + str(array[i])
-    return s
-
-#ganshade
-# write the training data to train.csv, then we can read the data and train a model,
-f1 = open('/host/home/kagglehomecredit/kaggledata/train.csv', 'w')
-
-label = train_labels.tolist()
-train = train.tolist()
-test = test.tolist()
-
-for i in range(0, len(train)):
-    f1.write(str(label[i]) + "," + mkString(train[i]))
-    if i != len(train) - 1:
-        f1.write("\n")
-f1.close()
 
 
-f2 = open('/host/home/kagglehomecredit/kaggledata/test.csv', 'w')
-
-for i in range(0, len(test)):
-    if i != len(test) - 1:
-        f2.write(mkString(test[i]) + "\n")
-    else:
-        f2.write(mkString(test[i]))
-f2.close()
-# from sklearn.ensemble import RandomForestClassifier
+import json
+import time
+import lightgbm as lgb
+import pandas as pd
+from sklearn.metrics import mean_squared_error
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import  make_classification
+start_time = time.time()
+# dtrain = xgb.DMatrix(train, label=train_labels)
+# X_train, X_test, y_train, y_test = cross_validation.train_test_split(train, train_labels, test_size=0.33,
+#                                                                      random_state=42)
+# xgb_train = xgb.DMatrix(X_train, label=y_train)
+# xgb_test = xgb.DMatrix(X_test, label=y_test)
+X_train,X_test,y_train,y_test =train_test_split(train, train_labels,test_size=0.1)
+# 加载你的数据
+# print('Load data...')
+# df_train = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_train.csv', header=None, sep='\t')
+# df_test = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_test.csv', header=None, sep='\t')
 #
-# # Make the random forest classifier
-# random_forest = RandomForestClassifier(n_estimators = 100, random_state = 50, verbose = 1, n_jobs = -1)
-#
-# # Train on the training data
-# random_forest.fit(train, train_labels)
-#
-# # Extract feature importances
-# feature_importance_values = random_forest.feature_importances_
-# feature_importances = pd.DataFrame({'feature': features, 'importance': feature_importance_values})
-#
-# # Make predictions on the test data
-# predictions = random_forest.predict_proba(test)[:, 1]
-#
-# # Make a submission dataframe
-# submit = app_test[['SK_ID_CURR']]
-# submit['TARGET'] = predictions
-#
-# # Save the submission dataframe
-# submit.to_csv('C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\random_forest_baseline.csv', index = False)
+# y_train = df_train[0].values
+# y_test = df_test[0].values
+# X_train = df_train.drop(0, axis=1).values
+# X_test = df_test.drop(0, axis=1).values
+# 创建成lgb特征的数据集格式
+lgb_train = lgb.Dataset(X_train, y_train)
+lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
+# 将参数写成字典下形式
+params = {
+    'task': 'train',
+    'boosting_type': 'gbdt',  # 设置提升类型
+    'objective': 'regression', # 目标函数
+    'metric': {'l2', 'auc'},  # 评估函数
+    'num_leaves': 31,   # 叶子节点数
+    'learning_rate': 0.05,  # 学习速率
+    'feature_fraction': 0.9, # 建树的特征选择比例
+    'bagging_fraction': 0.8, # 建树的样本采样比例
+    'bagging_freq': 5,  # k 意味着每 k 次迭代执行bagging
+    'verbose': 1, # <0 显示致命的, =0 显示错误 (警告), >0 显示信息
+    'max_depth': 8
 
-#zaxiede
-import xgboost as xgb
-dtrain = xgb.DMatrix('/host/home/kagglehomecredit/kaggledata/train.csv?format=csv&label_column=0')
+}
+print('Start training...')
+# 训练 cv and train
+gbm = lgb.train(params,lgb_train,num_boost_round=200,valid_sets=lgb_eval,early_stopping_rounds=50)
+print('Save model...')
+# 保存模型到文件
+gbm.save_model('model.txt')
 
-param = {'max_depth': 10, 'eta': 0.3, 'silent': 0, 'objective': 'binary:logistic'}
-param['nthread'] = 1
-param['eval_metric'] = 'auc'
-
-num_round = 10
-bst = xgb.train(param, dtrain, num_round)
-bst.save_model('/host/home/kagglehomecredit/kaggledata/xgboost.0001.model')
+print('Start predicting...')
+# 预测数据集
+y_pred = gbm.predict(X_test, num_iteration=gbm.best_iteration)
+# 评估模型
+cost_time = time.time() - start_time
+print("lightgbm success!", '\n', "cost time:", cost_time, "(s)......")
+print('The rmse of prediction is:', mean_squared_error(y_test, y_pred) ** 0.5)
 
 test_id = app_test['SK_ID_CURR']
-
-dtest = xgb.DMatrix('/host/home/kagglehomecredit/kaggledata/test.csv?format=csv')
-ypred = bst.predict(dtest)
-result = open('/host/home/kagglehomecredit/kaggledata/xgboost_baseline.csv', 'w')
+#test = lgb.Dataset(test)
+y_pred = gbm.predict(test)
+result = open('/host/home/kagglehomecredit/kaggledata/lightgbm_baseline.csv', 'w')
 result.write("SK_ID_CURR,TARGET\n")
-ypred = ypred.tolist()
-for i in range(0, len(ypred)):
-    result.write(str(test_id[i]) + "," + str(ypred[i]))
+y_pred = y_pred.tolist()
+for i in range(0, len(y_pred)):
+    result.write(str(test_id[i]) + "," + str(y_pred[i]))
     result.write("\n")
 result.close()
-
-
-

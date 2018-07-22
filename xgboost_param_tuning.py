@@ -1,18 +1,6 @@
-#numpy and pandas for data manipulation
-from datetime import time
-
-import numpy as np
-import pandas as pd
-
-
-#sklearn preprocessing for dealing with categorical variables
+# sklearn preprocessing for dealing with categorical variables
 from sklearn.preprocessing import LabelEncoder
-
-#File System manangement
-import os
-
-#Suppress warnings
-import warnings
+# Suppress warnings
 # File System manangement
 import os
 # Suppress warnings
@@ -22,39 +10,41 @@ import numpy as np
 import pandas as pd
 # sklearn preprocessing for dealing with categorical variables
 from sklearn.preprocessing import LabelEncoder
-from xgboost import XGBClassifier
 
 warnings.filterwarnings('ignore')
 
-#matplotlib and seaborn for plotting
+# matplotlib and seaborn for plotting
 
-print(os.listdir("C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data"))
+print(os.listdir("/host/home/kagglehomecredit/kaggledata"))
 
-app_train = pd.read_csv('C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\application_train.csv')
-app_test = pd.read_csv('C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\application_test.csv')
+app_train = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_train.csv')
+app_test = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_test.csv')
+
+
 # print('Training data shape: ', app_train.shape)
 #
 # print(app_train['TARGET'].value_counts())
 # app_train['TARGET'].astype(int).plot.hist()
-#plt.show()
+# plt.show()
 
 def missing_values_table(df):
-    #Total missing values
+    # Total missing values
     mis_val = df.isnull().sum()
 
-    #Percentage of missing values
+    # Percentage of missing values
     mis_val_percent = 100 * mis_val / len(df)
 
-    #Make a table with the results
-    mis_val_table = pd.concat([mis_val, mis_val_percent], axis = 1)
+    # Make a table with the results
+    mis_val_table = pd.concat([mis_val, mis_val_percent], axis=1)
 
     # Rename the colums
-    mis_val_table_ren_columns = mis_val_table.rename(columns = {0 : 'Missing Values', 1 : '%of Total Values'})
+    mis_val_table_ren_columns = mis_val_table.rename(columns={0: 'Missing Values', 1: '%of Total Values'})
 
-    #Sort the talble bny percentage of missing descending
-    mis_val_table_ren_columns = mis_val_table_ren_columns[mis_val_table_ren_columns.iloc[:,1] != 0].sort_values('%of Total Values', ascending = False).round(1)
+    # Sort the talble bny percentage of missing descending
+    mis_val_table_ren_columns = mis_val_table_ren_columns[mis_val_table_ren_columns.iloc[:, 1] != 0].sort_values(
+        '%of Total Values', ascending=False).round(1)
 
-    #Print some summary information
+    # Print some summary information
     print("Your selected dataframe has " + str(df.shape[1]) + " columns.\n"
                                                               "There are " + str(mis_val_table_ren_columns.shape[0]) +
           " columns that have missing values.")
@@ -73,7 +63,7 @@ def missing_values_table(df):
 le = LabelEncoder()
 le_count = 0
 
-#Iterate through the columns
+# Iterate through the columns
 for col in app_train:
     if app_train[col].dtype == 'object':
         # If 2 or fewer unique categories
@@ -99,7 +89,7 @@ print('Testing Features shape: ', app_test.shape)
 train_labels = app_train['TARGET']
 
 # Align the training and testing data, keep only columns present in both dataframes
-app_train, app_test = app_train.align(app_test, join = 'inner', axis = 1)
+app_train, app_test = app_train.align(app_test, join='inner', axis=1)
 
 # Add the target back in
 app_train['TARGET'] = train_labels
@@ -135,16 +125,17 @@ print('Testing Features shape: ', app_test.shape)
 app_train['DAYS_EMPLOYED_ANOM'] = app_train["DAYS_EMPLOYED"] == 365243
 
 # Replace the anomalous values with nan
-app_train['DAYS_EMPLOYED'].replace({365243: np.nan}, inplace = True)
+app_train['DAYS_EMPLOYED'].replace({365243: np.nan}, inplace=True)
 
 # app_train['DAYS_EMPLOYED'].plot.hist(title = 'Days Employment Histogram');
 # plt.xlabel('Days Employment');
-#plt.show()
+# plt.show()
 
 app_test['DAYS_EMPLOYED_ANOM'] = app_test["DAYS_EMPLOYED"] == 365243
-app_test["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace = True)
+app_test["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace=True)
 
-print('There are %d anomalies in the test data out of %d entries' % (app_test["DAYS_EMPLOYED_ANOM"].sum(), len(app_test)))
+print(
+    'There are %d anomalies in the test data out of %d entries' % (app_test["DAYS_EMPLOYED_ANOM"].sum(), len(app_test)))
 
 # Find correlations with the target and sort
 # correlations = app_train.corr()['TARGET'].sort_values()
@@ -155,7 +146,7 @@ print('There are %d anomalies in the test data out of %d entries' % (app_test["D
 
 # Find the correlation of the positive days since birth and target
 app_train['DAYS_BIRTH'] = abs(app_train['DAYS_BIRTH'])
-#print(app_train['DAYS_BIRTH'].corr(app_train['TARGET']))
+# print(app_train['DAYS_BIRTH'].corr(app_train['TARGET']))
 
 # Set the style of plots
 # plt.style.use('fivethirtyeight')
@@ -182,7 +173,7 @@ age_data = app_train[['TARGET', 'DAYS_BIRTH']]
 age_data['YEARS_BIRTH'] = age_data['DAYS_BIRTH'] / 365
 
 # Bin the age data
-age_data['YEARS_BINNED'] = pd.cut(age_data['YEARS_BIRTH'], bins = np.linspace(20, 70, num = 11))
+age_data['YEARS_BINNED'] = pd.cut(age_data['YEARS_BIRTH'], bins=np.linspace(20, 70, num=11))
 age_data.head(10)
 
 app_train_domain = app_train.copy()
@@ -241,7 +232,6 @@ def mkString(array):
     return s
 
 
-
 # f1 = open('C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\train.csv', 'w')
 #
 # label = train_labels.tolist()
@@ -282,52 +272,51 @@ def mkString(array):
 import xgboost as xgb
 from sklearn import cross_validation
 import time
+
 start_time = time.time()
-dtrain = xgb.DMatrix(train, label = train_labels)
+dtrain = xgb.DMatrix(train, label=train_labels)
 
-X_train, X_test, y_train, y_test = cross_validation.train_test_split(train, train_labels, test_size=0.001, random_state=42)
-
+X_train, X_test, y_train, y_test = cross_validation.train_test_split(train, train_labels, test_size=0.2,
+                                                                     random_state=42)
 
 xgb_train = xgb.DMatrix(X_train, label=y_train)
-xgb_test = xgb.DMatrix(X_test,label=y_test)
+xgb_test = xgb.DMatrix(X_test, label=y_test)
 ##参数
-params={
-'booster':'gbtree',
-'objective': 'binary:logistic',
-'silent':0 ,#设置成1则没有运行信息输出，最好是设置为0.
-#'nthread':7,# cpu 线程数 默认最大
-'eta': 0.007, # 如同学习率
-'min_child_weight':3,
-# 这个参数默认是 1，是每个叶子里面 h 的和至少是多少，对正负样本不均衡时的 0-1 分类而言
-#，假设 h 在 0.01 附近，min_child_weight 为 1 意味着叶子节点中最少需要包含 100 个样本。
-#这个参数非常影响结果，控制叶子节点中二阶导的和的最小值，该参数值越小，越容易 overfitting。
-'max_depth':10, # 构建树的深度，越大越容易过拟合
-'gamma':0.1,  # 树的叶子节点上作进一步分区所需的最小损失减少,越大越保守，一般0.1、0.2这样子。
-'subsample':0.7, # 随机采样训练样本
-'colsample_bytree':0.7, # 生成树时进行的列采样
-'lambda':2,  # 控制模型复杂度的权重值的L2正则化项参数，参数越大，模型越不容易过拟合。
-#'alpha':0, # L1 正则项参数
-'scale_pos_weight':1, #如果取值大于0的话，在类别样本不平衡的情况下有助于快速收敛。
-#'objective': 'multi:softmax', #多分类的问题
-#'num_class':10, # 类别数，多分类与 multisoftmax 并用
-'seed':1000, #随机种子
-'eval_metric': 'auc'
+params = {
+    'booster': 'gbtree',
+    'objective': 'binary:logistic',
+    'silent': 0,  # 设置成1则没有运行信息输出，最好是设置为0.
+    # 'nthread':7,# cpu 线程数 默认最大
+    'eta': 0.007,  # 如同学习率
+    #'min_child_weight': 3,
+    # 这个参数默认是 1，是每个叶子里面 h 的和至少是多少，对正负样本不均衡时的 0-1 分类而言
+    # ，假设 h 在 0.01 附近，min_child_weight 为 1 意味着叶子节点中最少需要包含 100 个样本。
+    # 这个参数非常影响结果，控制叶子节点中二阶导的和的最小值，该参数值越小，越容易 overfitting。
+    'max_depth': 15,  # 构建树的深度，越大越容易过拟合
+    'gamma': 0.1,  # 树的叶子节点上作进一步分区所需的最小损失减少,越大越保守，一般0.1、0.2这样子。
+    'subsample': 0.7,  # 随机采样训练样本
+    'colsample_bytree': 0.7,  # 生成树时进行的列采样
+    'lambda': 2,  # 控制模型复杂度的权重值的L2正则化项参数，参数越大，模型越不容易过拟合。
+    # 'alpha':0, # L1 正则项参数
+    'scale_pos_weight': 1,  # 如果取值大于0的话，在类别样本不平衡的情况下有助于快速收敛。
+    # 'objective': 'multi:softmax', #多分类的问题
+    # 'num_class':10, # 类别数，多分类与 multisoftmax 并用
+    'seed': 1000,  # 随机种子
+    'eval_metric': 'auc'
 }
 plst = list(params.items())
-num_rounds = 100 # 迭代次数
-watchlist = [(xgb_train, 'train'),(xgb_test, 'val')]
+num_rounds = 200  # 迭代次数
+watchlist = [(xgb_train, 'train'), (xgb_test, 'val')]
 
-#训练模型并保存
+# 训练模型并保存
 # early_stopping_rounds 当设置的迭代次数较大时，early_stopping_rounds 可在一定的迭代次数内准确率没有提升就停止训练
-model = xgb.train(plst, xgb_train, num_rounds, watchlist,early_stopping_rounds=100)
-#model.save_model('./model/xgb.model') # 用于存储训练出的模型
-print("best best_ntree_limit",model.best_ntree_limit)
-y_pred = model.predict(xgb_test,ntree_limit=model.best_ntree_limit)
-#输出运行时长
-cost_time = time.time()-start_time
-print( "xgboost success!",'\n',"cost time:",cost_time,"(s)......")
-
-
+model = xgb.train(plst, xgb_train, num_rounds, watchlist, early_stopping_rounds=100)
+# model.save_model('./model/xgb.model') # 用于存储训练出的模型
+print("best best_ntree_limit", model.best_ntree_limit)
+y_pred = model.predict(xgb_test, ntree_limit=model.best_ntree_limit)
+# 输出运行时长
+cost_time = time.time() - start_time
+print("xgboost success!", '\n', "cost time:", cost_time, "(s)......")
 
 # param = {'max_depth': 15, 'eta': 0.01, 'silent': 0, 'objective': 'binary:logistic', 'scale_pos_weight':'10'}
 # param['nthread'] = 1
@@ -338,16 +327,12 @@ print( "xgboost success!",'\n',"cost time:",cost_time,"(s)......")
 # bst.save_model('C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\xgboost.0001.model')
 #
 test_id = app_test['SK_ID_CURR']
-
 dtest = xgb.DMatrix(test)
 ypred = model.predict(dtest)
-result = open('C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\xgboost_baseline.csv', 'w')
+result = open('/host/home/kagglehomecredit/kaggledata/xgboost_baseline.csv', 'w')
 result.write("SK_ID_CURR,TARGET\n")
 ypred = ypred.tolist()
 for i in range(0, len(ypred)):
     result.write(str(test_id[i]) + "," + str(ypred[i]))
     result.write("\n")
 result.close()
-
-
-
