@@ -1,18 +1,8 @@
 #numpy and pandas for data manipulation
-from datetime import time
 
-import numpy as np
-import pandas as pd
-
-
-#sklearn preprocessing for dealing with categorical variables
+# sklearn preprocessing for dealing with categorical variables
 from sklearn.preprocessing import LabelEncoder
-
-#File System manangement
-import os
-
-#Suppress warnings
-import warnings
+# Suppress warnings
 # File System manangement
 import os
 # Suppress warnings
@@ -22,7 +12,6 @@ import numpy as np
 import pandas as pd
 # sklearn preprocessing for dealing with categorical variables
 from sklearn.preprocessing import LabelEncoder
-from xgboost import XGBClassifier
 
 warnings.filterwarnings('ignore')
 
