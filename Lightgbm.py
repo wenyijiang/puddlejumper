@@ -254,19 +254,19 @@ params = {
     'boosting_type': 'gbdt',  # 设置提升类型
     'objective': 'binary', # 目标函数
     'metric': {'l2', 'auc'},  # 评估函数
-    'num_leaves': 31,   # 叶子节点数
+    'num_leaves': 100,   # 叶子节点数
     'learning_rate': 0.05,  # 学习速率
     'feature_fraction': 0.9, # 建树的特征选择比例
     'bagging_fraction': 0.8, # 建树的样本采样比例
     'bagging_freq': 5,  # k 意味着每 k 次迭代执行bagging
     'verbose': 1, # <0 显示致命的, =0 显示错误 (警告), >0 显示信息
     'is_unbalance':'true',
-    'num_tree':200
+    'num_tree':500
 
 }
 print('Start training...')
 # 训练 cv and train
-gbm = lgb.train(params,lgb_train,num_boost_round=200,valid_sets=lgb_eval,early_stopping_rounds=50)
+gbm = lgb.train(params,lgb_train,num_boost_round=200,valid_sets=lgb_eval,early_stopping_rounds=100)
 print('Save model...')
 # 保存模型到文件
 gbm.save_model('model.txt')
