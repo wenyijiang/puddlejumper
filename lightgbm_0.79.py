@@ -37,7 +37,7 @@ def application_train_test(num_rows = None, nan_as_category = True):
 
     #Categorical features: Binary features and One-Hot encoding
     for bin_feature in ['CODE_GENDER', 'FLAG_OWN_CAR', 'FLAG_OWN_REALTY']:
-        df[bin_feature], uniques = pd.factorizedf[bin_feature]
+        df[bin_feature], uniques = pd.factorize(df[bin_feature])
         df, cat_cols = one_hot_encoder(df, nan_as_category)
         #NaN values for DAYS_EMPLOYED: 365.243->nan
         df['DAYS_EMPLOYED'].replace(365243, np.nan, inplace = True)
