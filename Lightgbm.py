@@ -15,10 +15,17 @@ warnings.filterwarnings('ignore')
 
 # matplotlib and seaborn for plotting
 
-print(os.listdir("/host/home/kagglehomecredit/kaggledata"))
+#print(os.listdir("/host/home/kagglehomecredit/kaggledata"))
+train_path = '/host/home/kagglehomecredit/kaggledata/application_train.csv'
+test_path = '/host/home/kagglehomecredit/kaggledata/application_test.csv'
+result_path = '/host/home/kagglehomecredit/kaggledata/lightgbm_baseline.csv'
 
-app_train = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_train.csv')
-app_test = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_test.csv')
+# train_path = 'C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\application_train.csv'
+# test_path = 'C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\application_test.csv'
+# result_path = 'C:\\Users\\wq\\Desktop\\kaggle_credict_data\\data\\lightgbm_baseline.csv'
+
+app_train = pd.read_csv(train_path)
+app_test = pd.read_csv(test_path)
 
 
 # print('Training data shape: ', app_train.shape)
@@ -236,42 +243,30 @@ from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import  make_classification
 start_time = time.time()
-# dtrain = xgb.DMatrix(train, label=train_labels)
-# X_train, X_test, y_train, y_test = cross_validation.train_test_split(train, train_labels, test_size=0.33,
-#                                                                      random_state=42)
-# xgb_train = xgb.DMatrix(X_train, label=y_train)
-# xgb_test = xgb.DMatrix(X_test, label=y_test)
-X_train,X_test,y_train,y_test =train_test_split(train, train_labels,test_size=0.1)
+
+X_train,X_test,y_train,y_test =train_test_split(train, train_labels,test_size=0.2)
 # 加载你的数据
-# print('Load data...')
-# df_train = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_train.csv', header=None, sep='\t')
-# df_test = pd.read_csv('/host/home/kagglehomecredit/kaggledata/application_test.csv', header=None, sep='\t')
-#
-# y_train = df_train[0].values
-# y_test = df_test[0].values
-# X_train = df_train.drop(0, axis=1).values
-# X_test = df_test.drop(0, axis=1).values
-# 创建成lgb特征的数据集格式
 lgb_train = lgb.Dataset(X_train, y_train)
 lgb_eval = lgb.Dataset(X_test, y_test, reference=lgb_train)
 # 将参数写成字典下形式
 params = {
     'task': 'train',
     'boosting_type': 'gbdt',  # 设置提升类型
-    'objective': 'regression', # 目标函数
+    'objective': 'binary', # 目标函数
     'metric': {'l2', 'auc'},  # 评估函数
-    'num_leaves': 31,   # 叶子节点数
+    'num_leaves': 100,   # 叶子节点数
     'learning_rate': 0.05,  # 学习速率
     'feature_fraction': 0.9, # 建树的特征选择比例
     'bagging_fraction': 0.8, # 建树的样本采样比例
     'bagging_freq': 5,  # k 意味着每 k 次迭代执行bagging
     'verbose': 1, # <0 显示致命的, =0 显示错误 (警告), >0 显示信息
-    'max_depth': 8
+    'is_unbalance':'true',
+    'num_tree':500
 
 }
 print('Start training...')
 # 训练 cv and train
-gbm = lgb.train(params,lgb_train,num_boost_round=200,valid_sets=lgb_eval,early_stopping_rounds=50)
+gbm = lgb.train(params,lgb_train,num_boost_round=500,valid_sets=lgb_eval,early_stopping_rounds=200)
 print('Save model...')
 # 保存模型到文件
 gbm.save_model('model.txt')
@@ -286,8 +281,19 @@ print('The rmse of prediction is:', mean_squared_error(y_test, y_pred) ** 0.5)
 
 test_id = app_test['SK_ID_CURR']
 #test = lgb.Dataset(test)
+y_pred = gbm.predict(test, num_iteration=gbm.best_iteration)
+result = open(result_path, 'w')
+result.write("SK_ID_CURR,TARGET\n")
+y_pred = y_pred.tolist()
+for i in range(0, len(y_pred)):
+    result.write(str(test_id[i]) + "," + str(y_pred[i]))
+    result.write("\n")
+result.close()
+
+
+test_id = app_test['SK_ID_CURR']
 y_pred = gbm.predict(test)
-result = open('/host/home/kagglehomecredit/kaggledata/lightgbm_baseline.csv', 'w')
+result = open(result_path, 'w')
 result.write("SK_ID_CURR,TARGET\n")
 y_pred = y_pred.tolist()
 for i in range(0, len(y_pred)):

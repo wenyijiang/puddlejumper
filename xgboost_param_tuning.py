@@ -1,3 +1,6 @@
+
+#numpy and pandas for data manipulation
+
 # sklearn preprocessing for dealing with categorical variables
 from sklearn.preprocessing import LabelEncoder
 # Suppress warnings
@@ -272,6 +275,7 @@ def mkString(array):
 import xgboost as xgb
 from sklearn import cross_validation
 import time
+import operator
 from xgboost import plot_importance
 from matplotlib import pyplot as plt
 start_time = time.time()
@@ -306,7 +310,7 @@ params = {
     'eval_metric': 'auc'
 }
 plst = list(params.items())
-num_rounds = 5 # 迭代次数
+num_rounds = 200 # 迭代次数
 watchlist = [(xgb_train, 'train'), (xgb_test, 'val')]
 
 # 训练模型并保存
@@ -332,16 +336,33 @@ print("xgboost success!", '\n', "cost time:", cost_time, "(s)......")
 test_id = app_test['SK_ID_CURR']
 dtest = xgb.DMatrix(test)
 ypred = model.predict(dtest)
-plot_importance(model)
-plt.show()
-
+# plot_importance(model)
+# plt.show()
 # feat_imp = pd.Series(model.booster().get_fscore()).sort_values(ascending=False)
 # feat_imp.plot(kind='bar', title='Feature Importances')
 # import matplotlib.pyplot as plt
 # plt.show()
+# importance = model.get_fscore()
+# temp1 = []
+# temp2 = []
+# for k in importance:
+#     temp1.append(k)
+#     temp2.append(importance[k])
+# print(pd.DataFrame({
+#         'column': temp1,
+#         'importance': temp2,
+#     }).sort_values(by='importance'))
+importance = model.get_fscore()
+importance = sorted(importance.items(), key=operator.itemgetter(1))
+#print (importance)
+im=open('/host/home/kagglehomecredit/kaggledata/xgboostimportance.txt', 'w')
+for i in importance:
+    im.write(str(i))
+    im.write("\n")
+im.close()
 result = open('/host/home/kagglehomecredit/kaggledata/xgboost_baseline.csv', 'w')
 result.write("SK_ID_CURR,TARGET\n")
-ypred = ypred.tolist()# meiyuce
+ypred = ypred.tolist()
 for i in range(0, len(ypred)):
     result.write(str(test_id[i]) + "," + str(ypred[i]))
     result.write("\n")
