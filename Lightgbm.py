@@ -266,7 +266,11 @@ params = {
 }
 print('Start training...')
 # 训练 cv and train
+<<<<<<< HEAD
 gbm = lgb.train(params,lgb_train,num_boost_round=500,valid_sets=lgb_eval,early_stopping_rounds=200)
+=======
+gbm = lgb.train(params,lgb_train,num_boost_round=200,valid_sets=lgb_eval,early_stopping_rounds=100)
+>>>>>>> 4ea23152523faf97aa6dcd0686c5612097a8fd7d
 print('Save model...')
 # 保存模型到文件
 gbm.save_model('model.txt')
